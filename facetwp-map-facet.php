@@ -346,7 +346,13 @@ class FacetWP_Facet_Map_Addon
             </td>
         </tr>
         <tr>
-            <td><?php _e('Marker clustering', 'fwp'); ?>:</td>
+            <td>
+                <?php _e('Marker clustering', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Group marker clusters?', 'fwp' ); ?></div>
+                </div>
+            </td>
             <td>
                 <select class="facet-cluster">
                     <option value="yes"><?php _e( 'Yes', 'fwp' ); ?></option>
@@ -376,7 +382,13 @@ class FacetWP_Facet_Map_Addon
             </td>
         </tr>
         <tr>
-            <td><?php _e('Zoom', 'fwp'); ?>:</td>
+            <td>
+                <?php _e('Zoom', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Force zoom bounds (between 1 and 20)?', 'fwp' ); ?></div>
+                </div>
+            </td>
             <td>
                 <input type="text" class="facet-min-zoom" value="1" placeholder="Min" style="width:96px" />
                 <input type="text" class="facet-max-zoom" value="20" placeholder="Max" style="width:96px" />
@@ -390,7 +402,13 @@ class FacetWP_Facet_Map_Addon
             </td>
         </tr>
         <tr>
-            <td><?php _e('Default coordinates', 'fwp'); ?>:</td>
+            <td>
+                <?php _e('Default coordinates', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Center the map here if there are no results', 'fwp' ); ?></div>
+                </div>
+            </td>
             <td>
                 <input type="text" class="facet-default-lat" value="" placeholder="Latitude" style="width:96px" />
                 <input type="text" class="facet-default-lng" value="" placeholder="Longitude" style="width:96px" />
