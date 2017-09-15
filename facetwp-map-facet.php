@@ -50,6 +50,18 @@ class FacetWP_Facet_Map_Addon
     }
 
 
+    function get_map_design( $slug ) {
+        $designs = array(
+            'light-dream' => '[{"featureType":"landscape","stylers":[{"hue":"#FFBB00"},{"saturation":43.400000000000006},{"lightness":37.599999999999994},{"gamma":1}]},{"featureType":"road.highway","stylers":[{"hue":"#FFC200"},{"saturation":-61.8},{"lightness":45.599999999999994},{"gamma":1}]},{"featureType":"road.arterial","stylers":[{"hue":"#FF0300"},{"saturation":-100},{"lightness":51.19999999999999},{"gamma":1}]},{"featureType":"road.local","stylers":[{"hue":"#FF0300"},{"saturation":-100},{"lightness":52},{"gamma":1}]},{"featureType":"water","stylers":[{"hue":"#0078FF"},{"saturation":-13.200000000000003},{"lightness":2.4000000000000057},{"gamma":1}]},{"featureType":"poi","stylers":[{"hue":"#00FF6A"},{"saturation":-1.0989010989011234},{"lightness":11.200000000000017},{"gamma":1}]}]',
+            'avocado-world' => '[{"featureType":"water","elementType":"geometry","stylers":[{"visibility":"on"},{"color":"#aee2e0"}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#abce83"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#769E72"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#7B8758"}]},{"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#EBF4A4"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"visibility":"simplified"},{"color":"#8dab68"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#5B5B3F"}]},{"featureType":"road","elementType":"labels.text.stroke","stylers":[{"color":"#ABCE83"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#A4C67D"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#9BBF72"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#EBF4A4"}]},{"featureType":"transit","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"color":"#87ae79"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#7f2200"},{"visibility":"off"}]},{"featureType":"administrative","elementType":"labels.text.stroke","stylers":[{"color":"#ffffff"},{"visibility":"on"},{"weight":4.1}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#495421"}]},{"featureType":"administrative.neighborhood","elementType":"labels","stylers":[{"visibility":"off"}]}]',
+            'blue-water' => '[{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#444444"}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#f2f2f2"}]},{"featureType":"poi","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"all","stylers":[{"saturation":-100},{"lightness":45}]},{"featureType":"road.highway","elementType":"all","stylers":[{"visibility":"simplified"}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#46bcec"},{"visibility":"on"}]}]',
+            'midnight-commander' => '[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#144b53"},{"lightness":14},{"weight":1.4}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#08304b"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#0c4152"},{"lightness":5}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#0b434f"},{"lightness":25}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#0b3d51"},{"lightness":16}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"transit","elementType":"all","stylers":[{"color":"#146474"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#021019"}]}]',
+        );
+
+        return isset( $designs[ $slug ] ) ? json_decode( $designs[ $slug ] ) : '';
+    }
+
+
     function get_gmaps_url() {
 
         // hard-coded
@@ -92,6 +104,7 @@ class FacetWP_Facet_Map_Addon
         $output['settings']['map']['config'] = $this->map_facet;
         $output['settings']['map']['init'] = array(
             'scrollWheel' => false,
+            'styles' => $this->get_map_design( $this->map_facet['map_design'] ),
             'minZoom' => (int) $this->map_facet['min_zoom'] ?: 1,
             'maxZoom' => (int) $this->map_facet['max_zoom'] ?: 20,
             'center' => array(
@@ -274,6 +287,7 @@ class FacetWP_Facet_Map_Addon
         $this.find('.facet-source-other').val(obj.source_other);
         $this.find('.facet-limit').val(obj.limit);
         $this.find('.facet-cluster').val(obj.cluster);
+        $this.find('.facet-map-design').val(obj.map_design);
         $this.find('.facet-marker-content').val(obj.marker_content);
         $this.find('.facet-min-zoom').val(obj.min_zoom);
         $this.find('.facet-max-zoom').val(obj.max_zoom);
@@ -288,6 +302,7 @@ class FacetWP_Facet_Map_Addon
         obj['source_other'] = $this.find('.facet-source-other').val();
         obj['limit'] = $this.find('.facet-limit').val();
         obj['cluster'] = $this.find('.facet-cluster').val();
+        obj['map_design'] = $this.find('.facet-map-design').val();
         obj['marker_content'] = $this.find('.facet-marker-content').val();
         obj['min_zoom'] = $this.find('.facet-min-zoom').val();
         obj['max_zoom'] = $this.find('.facet-max-zoom').val();
@@ -336,6 +351,18 @@ class FacetWP_Facet_Map_Addon
                 <select class="facet-cluster">
                     <option value="yes"><?php _e( 'Yes', 'fwp' ); ?></option>
                     <option value="no"><?php _e( 'No', 'fwp' ); ?></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><?php _e('Map design', 'fwp'); ?>:</td>
+            <td>
+                <select class="facet-map-design">
+                    <option value="default"><?php _e( 'Default', 'fwp' ); ?></option>
+                    <option value="light-dream"><?php _e( 'Light Dream', 'fwp' ); ?></option>
+                    <option value="avocado-world"><?php _e( 'Avocado World', 'fwp' ); ?></option>
+                    <option value="blue-water"><?php _e( 'Blue Water', 'fwp' ); ?></option>
+                    <option value="midnight-commander"><?php _e( 'Midnight Commander', 'fwp' ); ?></option>
                 </select>
             </td>
         </tr>
