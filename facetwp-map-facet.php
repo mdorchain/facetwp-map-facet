@@ -50,6 +50,22 @@ class FacetWP_Facet_Map_Addon
     }
 
 
+    function get_gmaps_url() {
+
+        // hard-coded
+        $api_key = defined( 'GMAPS_API_KEY' ) ? GMAPS_API_KEY : '';
+
+        // admin ui
+        $tmp_key = FWP()->helper->get_setting( 'gmaps_api_key' );
+        $api_key = empty( $tmp_key ) ? $api_key : $tmp_key;
+
+        // hook
+        $api_key = apply_filters( 'facetwp_gmaps_api_key', $api_key );
+
+        return '//maps.googleapis.com/maps/api/js?libraries=places&key=' . $api_key;
+    }
+
+
     /**
      * Generate the facet HTML
      */
@@ -195,6 +211,7 @@ class FacetWP_Facet_Map_Addon
      * Load the front-end scripts
      */
     function assets( $assets ) {
+        $assets['gmaps'] = $this->get_gmaps_url();
         $assets['oms'] = FACETWP_MAP_URL . '/assets/js/oms.min.js';
         $assets['markerclusterer'] = FACETWP_MAP_URL . '/assets/js/markerclusterer.js';
         $assets['facetwp-map-front'] = FACETWP_MAP_URL . '/assets/js/front.js';
