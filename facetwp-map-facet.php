@@ -96,7 +96,15 @@ class FacetWP_Facet_Map_Addon
             'maxZoom'       => $this->map_facet['max_zoom'] ?: 20,
         );
 
-        $post_ids = FWP()->facet->query_args['post__in'];
+        // get all post IDs
+        if ( isset( $this->map_facet['limit'] ) && 'all' == $this->map_facet['limit'] ) {
+            $post_ids = (array) FWP()->facet->query_args['post__in'];
+        }
+        // get paginated post IDs
+        else {
+            $post_ids = (array) wp_list_pluck( FWP()->facet->query->get_posts(), 'ID' );
+        }
+
         $coords = $this->get_coordinates( $post_ids );
 
         foreach ( $post_ids as $post_id ) {
