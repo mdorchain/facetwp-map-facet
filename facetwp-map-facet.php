@@ -91,9 +91,13 @@ class FacetWP_Facet_Map_Addon
         // override using a facetwp_render_output hook with priority > 10
         $output['settings']['map']['config'] = $this->map_facet;
         $output['settings']['map']['init'] = array(
-            'scrollWheel'   => false,
-            'minZoom'       => $this->map_facet['min_zoom'] ?: 1,
-            'maxZoom'       => $this->map_facet['max_zoom'] ?: 20,
+            'scrollWheel' => false,
+            'minZoom' => (int) $this->map_facet['min_zoom'] ?: 1,
+            'maxZoom' => (int) $this->map_facet['max_zoom'] ?: 20,
+            'center' => array(
+                'lat' => (float) $this->map_facet['default_lat'],
+                'lng' => (float) $this->map_facet['default_lng'],
+            ),
         );
 
         // get all post IDs
