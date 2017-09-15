@@ -50,7 +50,7 @@ var FWP_MAP = FWP_MAP || {};
 
         if ('yes' === config.cluster) {
             FWP_MAP.mc = new MarkerClusterer(FWP_MAP.map, FWP_MAP.markersArray, {
-                imagePath: FWP_JSON.map.url + '/assets/img/m',
+                imagePath: FWP.settings.map.imagePath,
                 maxZoom: 14
             });
         }
@@ -58,7 +58,7 @@ var FWP_MAP = FWP_MAP || {};
         if (0 < FWP.settings.map.locations.length) {
             FWP_MAP.map.fitBounds(FWP_MAP.bounds);
         }
-        else if ('' !== config.default_lat && '' !== config.default_lng) {
+        else if (0 < config.default_lat && 0 < config.default_lng) {
             FWP_MAP.map.setCenter({
                 lat: parseFloat(config.default_lat),
                 lng: parseFloat(config.default_lng)

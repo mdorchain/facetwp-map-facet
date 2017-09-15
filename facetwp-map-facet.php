@@ -100,9 +100,18 @@ class FacetWP_Facet_Map_Addon
             return $output;
         }
 
-        // override using a facetwp_render_output hook with priority > 10
-        $output['settings']['map']['config'] = $this->map_facet;
-        $output['settings']['map']['init'] = array(
+        $settings = array(
+            'imagePath' => FACETWP_MAP_URL . '/assets/img/m',
+            'locations' => array(),
+        );
+
+        $settings['config'] = array(
+            'cluster'       => $this->map_facet['cluster'],
+            'default_lat'   => (float) $this->map_facet['default_lat'],
+            'default_lng'   => (float) $this->map_facet['default_lng'],
+        );
+
+        $settings['init'] = array(
             'scrollWheel' => false,
             'styles' => $this->get_map_design( $this->map_facet['map_design'] ),
             'minZoom' => (int) $this->map_facet['min_zoom'] ?: 1,
@@ -134,10 +143,12 @@ class FacetWP_Facet_Map_Addon
                 $args = apply_filters( 'facetwp_map_marker_args', $args, $post_id );
 
                 if ( false !== $args ) {
-                    $output['settings']['map']['locations'][] = $args;
+                    $settings['locations'][] = $args;
                 }
             }
         }
+
+        $output['settings']['map'] = $settings;
 
         return $output;
     }
@@ -246,14 +257,8 @@ class FacetWP_Facet_Map_Addon
 
     /**
      * Output any front-end scripts
-     * TODO this doesn't work on initial pageload because FWP()->facet->facets isn't set
-     * except for facets within the URL hash
      */
     function front_scripts() {
-        FWP()->display->json['map'] = array(
-            'url' => FACETWP_MAP_URL,
-            'settings' => FWP()->facet->facets // BLAH
-        );
 ?>
 <script>
 (function($) {
