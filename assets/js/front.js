@@ -4,11 +4,26 @@ var FWP_MAP = FWP_MAP || {};
 
     FWP_MAP.markersArray = [];
     FWP_MAP.activeMarker = null;
+    FWP_MAP.is_filtering = false;
+
+    function do_refresh() {
+        if (FWP_MAP.is_filtering) {
+            FWP.autoload();
+        }
+    }
 
     $(document).on('facetwp-loaded', function() {
         if (! FWP.loaded) {
 
-            FWP_MAP.map = new google.maps.Map(document.getElementById('map'), FWP.settings.map.init);
+            FWP_MAP.map = new google.maps.Map(document.getElementById('facetwp-map'), FWP.settings.map.init);
+
+            FWP_MAP.map.addListener('dragend', function() {
+                do_refresh();
+            });
+
+            FWP_MAP.map.addListener('zoom_changed', function() {
+                do_refresh();
+            });
 
             FWP_MAP.oms = new OverlappingMarkerSpiderfier(FWP_MAP.map, {
                 markersWontMove: true,
@@ -55,7 +70,7 @@ var FWP_MAP = FWP_MAP || {};
             });
         }
 
-        if (0 < FWP.settings.map.locations.length) {
+        if (! FWP_MAP.is_filtering && 0 < FWP.settings.map.locations.length) {
             FWP_MAP.map.fitBounds(FWP_MAP.bounds);
         }
         else if (0 < config.default_lat && 0 < config.default_lng) {

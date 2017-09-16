@@ -90,7 +90,7 @@ class FacetWP_Facet_Map_Addon
         $height = empty( $height ) ? 300 : $height;
         $height = is_numeric( $height ) ? $height . 'px' : $height;
 
-        $output = '<div id="map" style="width:' . $width . '; height:' . $height . '"></div>';
+        $output = '<div id="facetwp-map" style="width:' . $width . '; height:' . $height . '"></div>';
         return $output;
     }
 
@@ -121,6 +121,8 @@ class FacetWP_Facet_Map_Addon
                 'lng' => (float) $this->map_facet['default_lng'],
             ),
         );
+
+        $settings = apply_filters( 'facetwp_map_init_args', $settings );
 
         // get all post IDs
         if ( isset( $this->map_facet['limit'] ) && 'all' == $this->map_facet['limit'] ) {
@@ -227,19 +229,27 @@ class FacetWP_Facet_Map_Addon
      * Filter the query based on the map bounds
      */
     function filter_posts( $params ) {
-        /*
         global $wpdb;
 
         $facet = $params['facet'];
         $selected_values = (array) $params['selected_values'];
-        $selected_values = array_pop( $selected_values );
+
+        $swlat = (float) $selected_values[0];
+        $swlng = (float) $selected_values[1];
+        $nelat = (float) $selected_values[2];
+        $nelng = (float) $selected_values[3];
+
+        // @url https://stackoverflow.com/a/20741219
+        $compare_lat = ( $swlat < $nelat ) ? "$swlat AND $nelat" : "$nelat AND $swlat";
+        $compare_lng = ( $swlng < $nelng ) ? "$swlng AND $nelng" : "$nelng AND $swlng";
 
         $sql = "
         SELECT DISTINCT post_id FROM {$wpdb->prefix}facetwp_index
-        WHERE facet_name = '{$facet['name']}' AND facet_value IN ('$selected_values')";
+        WHERE facet_name = '{$facet['name']}' AND
+        (facet_value BETWEEN $compare_lat) AND
+        (facet_display_value BETWEEN $compare_lng)";
+
         return $wpdb->get_col( $sql );
-        */
-        return (array) $params['selected_values'];
     }
 
 
@@ -264,6 +274,11 @@ class FacetWP_Facet_Map_Addon
 (function($) {
     wp.hooks.addAction('facetwp/refresh/map', function($this, facet_name) {
         var selected_values = [];
+
+        if (FWP_MAP.is_filtering) {
+            selected_values = FWP_MAP.map.getBounds().toUrlValue().split(',');
+        }
+
         FWP.facets[facet_name] = selected_values;
 
         if (FWP.loaded) {
@@ -290,31 +305,31 @@ class FacetWP_Facet_Map_Addon
     wp.hooks.addAction('facetwp/load/map', function($this, obj) {
         $this.find('.facet-source').val(obj.source);
         $this.find('.facet-source-other').val(obj.source_other);
-        $this.find('.facet-limit').val(obj.limit);
-        $this.find('.facet-cluster').val(obj.cluster);
         $this.find('.facet-map-design').val(obj.map_design);
-        $this.find('.facet-marker-content').val(obj.marker_content);
-        $this.find('.facet-min-zoom').val(obj.min_zoom);
-        $this.find('.facet-max-zoom').val(obj.max_zoom);
+        $this.find('.facet-cluster').val(obj.cluster);
+        $this.find('.facet-limit').val(obj.limit);
         $this.find('.facet-map-width').val(obj.map_width);
         $this.find('.facet-map-height').val(obj.map_height);
+        $this.find('.facet-min-zoom').val(obj.min_zoom);
+        $this.find('.facet-max-zoom').val(obj.max_zoom);
         $this.find('.facet-default-lat').val(obj.default_lat);
         $this.find('.facet-default-lng').val(obj.default_lng);
+        $this.find('.facet-marker-content').val(obj.marker_content);
     });
 
     wp.hooks.addFilter('facetwp/save/map', function(obj, $this) {
         obj['source'] = $this.find('.facet-source').val();
         obj['source_other'] = $this.find('.facet-source-other').val();
-        obj['limit'] = $this.find('.facet-limit').val();
-        obj['cluster'] = $this.find('.facet-cluster').val();
         obj['map_design'] = $this.find('.facet-map-design').val();
-        obj['marker_content'] = $this.find('.facet-marker-content').val();
-        obj['min_zoom'] = $this.find('.facet-min-zoom').val();
-        obj['max_zoom'] = $this.find('.facet-max-zoom').val();
+        obj['cluster'] = $this.find('.facet-cluster').val();
+        obj['limit'] = $this.find('.facet-limit').val();
         obj['map_width'] = $this.find('.facet-map-width').val();
         obj['map_height'] = $this.find('.facet-map-height').val();
+        obj['min_zoom'] = $this.find('.facet-min-zoom').val();
+        obj['max_zoom'] = $this.find('.facet-max-zoom').val();
         obj['default_lat'] = $this.find('.facet-default-lat').val();
         obj['default_lng'] = $this.find('.facet-default-lng').val();
+        obj['marker_content'] = $this.find('.facet-marker-content').val();
         return obj;
     });
 })(jQuery);
@@ -351,21 +366,6 @@ class FacetWP_Facet_Map_Addon
             </td>
         </tr>
         <tr>
-            <td>
-                <?php _e('Marker clustering', 'fwp'); ?>:
-                <div class="facetwp-tooltip">
-                    <span class="icon-question">?</span>
-                    <div class="facetwp-tooltip-content"><?php _e( 'Group marker clusters?', 'fwp' ); ?></div>
-                </div>
-            </td>
-            <td>
-                <select class="facet-cluster">
-                    <option value="yes"><?php _e( 'Yes', 'fwp' ); ?></option>
-                    <option value="no"><?php _e( 'No', 'fwp' ); ?></option>
-                </select>
-            </td>
-        </tr>
-        <tr>
             <td><?php _e('Map design', 'fwp'); ?>:</td>
             <td>
                 <select class="facet-map-design">
@@ -378,7 +378,22 @@ class FacetWP_Facet_Map_Addon
             </td>
         </tr>
         <tr>
-            <td><?php _e('Limit', 'fwp'); ?>:</td>
+            <td>
+                <?php _e('Marker clustering', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Group markers into clusters?', 'fwp' ); ?></div>
+                </div>
+            </td>
+            <td>
+                <select class="facet-cluster">
+                    <option value="yes"><?php _e( 'Yes', 'fwp' ); ?></option>
+                    <option value="no"><?php _e( 'No', 'fwp' ); ?></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><?php _e('Marker limit', 'fwp'); ?>:</td>
             <td>
                 <select class="facet-limit">
                     <option value="all"><?php _e( 'Show all results', 'fwp' ); ?></option>
@@ -387,23 +402,23 @@ class FacetWP_Facet_Map_Addon
             </td>
         </tr>
         <tr>
+            <td><?php _e('Map size', 'fwp'); ?>:</td>
+            <td>
+                <input type="text" class="facet-map-width" value="" placeholder="Width" style="width:96px" />
+                <input type="text" class="facet-map-height" value="" placeholder="Height" style="width:96px" />
+            </td>
+        </tr>
+        <tr>
             <td>
                 <?php _e('Zoom', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
-                    <div class="facetwp-tooltip-content"><?php _e( 'Force zoom bounds (between 1 and 20)?', 'fwp' ); ?></div>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Set zoom bounds (between 1 and 20)?', 'fwp' ); ?></div>
                 </div>
             </td>
             <td>
                 <input type="text" class="facet-min-zoom" value="1" placeholder="Min" style="width:96px" />
                 <input type="text" class="facet-max-zoom" value="20" placeholder="Max" style="width:96px" />
-            </td>
-        </tr>
-        <tr>
-            <td><?php _e('Map size', 'fwp'); ?>:</td>
-            <td>
-                <input type="text" class="facet-map-width" value="" placeholder="Width" style="width:96px" />
-                <input type="text" class="facet-map-height" value="" placeholder="Height" style="width:96px" />
             </td>
         </tr>
         <tr>
