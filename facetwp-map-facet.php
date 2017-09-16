@@ -91,6 +91,7 @@ class FacetWP_Facet_Map_Addon
         $height = is_numeric( $height ) ? $height . 'px' : $height;
 
         $output = '<div id="facetwp-map" style="width:' . $width . '; height:' . $height . '"></div>';
+        $output .= '<div><button class="facetwp-map-filtering">Enable filtering</button></div>';
         return $output;
     }
 

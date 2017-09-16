@@ -12,6 +12,22 @@ var FWP_MAP = FWP_MAP || {};
         }
     }
 
+    $(document).on('click', '.facetwp-map-filtering', function() {
+        var $this = $(this);
+
+        if ($this.hasClass('enabled')) {
+            $this.text('Enable filtering');
+            FWP_MAP.is_filtering = false;
+            FWP.autoload();
+        }
+        else {
+            $this.text('Reset');
+            FWP_MAP.is_filtering = true;
+        }
+
+        $this.toggleClass('enabled');
+    });
+
     $(document).on('facetwp-loaded', function() {
         if (! FWP.loaded) {
 
