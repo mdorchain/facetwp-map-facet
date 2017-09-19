@@ -29,6 +29,10 @@ var FWP_MAP = FWP_MAP || {};
     });
 
     $(document).on('facetwp-loaded', function() {
+        if ('undefined' === typeof FWP.settings.map) {
+            return;
+        }
+
         if (! FWP.loaded) {
 
             FWP_MAP.map = new google.maps.Map(document.getElementById('facetwp-map'), FWP.settings.map.init);

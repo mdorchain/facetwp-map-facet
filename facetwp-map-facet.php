@@ -288,7 +288,7 @@ class FacetWP_Facet_Map_Addon
     });
 
     wp.hooks.addFilter('facetwp/selections/map', function(label, params) {
-        return 'Reset map';//FWP_JSON['map']['clearText'];
+        return 'Reset map';//FWP_JSON['map']['resetText'];
     });
 })(jQuery);
 </script>
