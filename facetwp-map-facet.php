@@ -34,7 +34,6 @@ class FacetWP_Facet_Map_Addon
 
         define( 'FACETWP_MAP_URL', plugins_url( '', __FILE__ ) );
 
-        add_filter( 'facetwp_assets', array( $this, 'assets' ) );
         add_filter( 'facetwp_query_args', array( $this, 'short_circuit' ) );
         add_filter( 'facetwp_index_row', array( $this, 'index_latlng' ), 1, 2 );
         add_filter( 'facetwp_render_output', array( $this, 'add_marker_data' ), 10, 2 );
@@ -255,21 +254,13 @@ class FacetWP_Facet_Map_Addon
 
 
     /**
-     * Load the front-end scripts
-     */
-    function assets( $assets ) {
-        $assets['gmaps'] = $this->get_gmaps_url();
-        $assets['oms'] = FACETWP_MAP_URL . '/assets/js/oms.min.js';
-        $assets['markerclusterer'] = FACETWP_MAP_URL . '/assets/js/markerclusterer.js';
-        $assets['facetwp-map-front'] = FACETWP_MAP_URL . '/assets/js/front.js';
-        return $assets;
-    }
-
-
-    /**
      * Output any front-end scripts
      */
     function front_scripts() {
+        FWP()->display->assets['gmaps'] = $this->get_gmaps_url();
+        FWP()->display->assets['oms'] = FACETWP_MAP_URL . '/assets/js/oms.min.js';
+        FWP()->display->assets['markerclusterer'] = FACETWP_MAP_URL . '/assets/js/markerclusterer.js';
+        FWP()->display->assets['facetwp-map-front'] = FACETWP_MAP_URL . '/assets/js/front.js';
 ?>
 <script>
 (function($) {
