@@ -26,7 +26,6 @@ class FacetWP_Facet_Map_Addon
 {
 
     public $map_facet;
-    public $is_active = false;
 
 
     function __construct() {
@@ -34,18 +33,8 @@ class FacetWP_Facet_Map_Addon
 
         define( 'FACETWP_MAP_URL', plugins_url( '', __FILE__ ) );
 
-        add_filter( 'facetwp_query_args', array( $this, 'short_circuit' ) );
         add_filter( 'facetwp_index_row', array( $this, 'index_latlng' ), 1, 2 );
         add_filter( 'facetwp_render_output', array( $this, 'add_marker_data' ), 10, 2 );
-    }
-
-
-    /**
-     * Is there a map facet in use?
-     */
-    function short_circuit( $query_args ) {
-        $this->is_active = $this->is_map_active();
-        return $query_args;
     }
 
 
@@ -96,7 +85,7 @@ class FacetWP_Facet_Map_Addon
 
 
     function add_marker_data( $output, $params ) {
-        if ( ! $this->is_active ) {
+        if ( ! $this->is_map_active() ) {
             return $output;
         }
 
