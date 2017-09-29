@@ -58,14 +58,16 @@ var FWP_MAP = FWP_MAP || {};
         // this needs to re-init on each refresh
         FWP_MAP.bounds = new google.maps.LatLngBounds();
 
-        $.each(FWP.settings.map.locations, function(idx, val) {
-            var marker = new google.maps.Marker({
+        $.each(FWP.settings.map.locations, function(idx, obj) {
+            var args = $.extend({
                 map: FWP_MAP.map,
-                position: val.position,
+                position: obj.position,
                 info: new google.maps.InfoWindow({
-                    content: val.content
+                    content: obj.content
                 })
-            });
+            }, obj);
+
+            var marker = new google.maps.Marker(args);
 
             google.maps.event.addListener(marker, 'spider_click', function() {
                 if (null !== FWP_MAP.activeMarker) {
