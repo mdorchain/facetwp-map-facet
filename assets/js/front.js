@@ -16,12 +16,12 @@ var FWP_MAP = FWP_MAP || {};
         var $this = $(this);
 
         if ($this.hasClass('enabled')) {
-            $this.text('Enable filtering');
+            $this.text(FWP_JSON['map']['filterText']);
             FWP_MAP.is_filtering = false;
             FWP.autoload();
         }
         else {
-            $this.text('Reset');
+            $this.text(FWP_JSON['map']['resetText']);
             FWP_MAP.is_filtering = true;
         }
 

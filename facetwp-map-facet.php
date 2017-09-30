@@ -29,7 +29,7 @@ class FacetWP_Facet_Map_Addon
 
 
     function __construct() {
-        $this->label = __( 'Map', 'fwp' );
+        $this->label = __( 'Map', 'fwp-map' );
 
         define( 'FACETWP_MAP_URL', plugins_url( '', __FILE__ ) );
 
@@ -78,9 +78,28 @@ class FacetWP_Facet_Map_Addon
         $height = empty( $height ) ? 300 : $height;
         $height = is_numeric( $height ) ? $height . 'px' : $height;
 
+        $class = '';
+        $btn_label = __( 'Enable filtering', 'fwp-map' );
+
+        if ( $this->is_map_filtering_enabled() ) {
+            $class = ' enabled';
+            $btn_label = __( 'Reset', 'fwp-map' );
+        }
+
         $output = '<div id="facetwp-map" style="width:' . $width . '; height:' . $height . '"></div>';
-        $output .= '<div><button class="facetwp-map-filtering">Enable filtering</button></div>';
+        $output .= '<div><button class="facetwp-map-filtering' . $class . '">' . esc_html( $btn_label ) . '</button></div>';
         return $output;
+    }
+
+
+    function is_map_filtering_enabled() {
+        foreach ( FWP()->facet->facets as $facet ) {
+            if ( 'map' == $facet['type'] && ! empty( $facet['selected_values'] ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -250,6 +269,9 @@ class FacetWP_Facet_Map_Addon
         FWP()->display->assets['oms'] = FACETWP_MAP_URL . '/assets/js/oms.min.js';
         FWP()->display->assets['markerclusterer'] = FACETWP_MAP_URL . '/assets/js/markerclusterer.js';
         FWP()->display->assets['facetwp-map-front'] = FACETWP_MAP_URL . '/assets/js/front.js';
+
+        FWP()->display->json['map']['filterText'] = __( 'Enable filtering', 'fwp-map' );
+        FWP()->display->json['map']['resetText'] = __( 'Reset', 'fwp-map' );
 ?>
 <script>
 (function($) {
@@ -268,7 +290,7 @@ class FacetWP_Facet_Map_Addon
     });
 
     wp.hooks.addFilter('facetwp/selections/map', function(label, params) {
-        return 'Reset map';//FWP_JSON['map']['resetText'];
+        return FWP_JSON['map']['resetText'];
     });
 })(jQuery);
 </script>
