@@ -92,10 +92,32 @@ class FacetWP_Facet_Map_Addon
     }
 
 
+    /**
+     * Is filtering turned on for the map?
+     * @return bool
+     */
     function is_map_filtering_enabled() {
         foreach ( FWP()->facet->facets as $facet ) {
             if ( 'map' == $facet['type'] && ! empty( $facet['selected_values'] ) ) {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Is a proximity facet in use? If so, return a lat/lng array
+     * @return mixed array of coordinates, or FALSE
+     */
+    function is_proximity_in_use() {
+        foreach ( FWP()->facet->facets as $facet ) {
+            if ( 'proximity' == $facet['type'] && ! empty( $facet['selected_values'] ) ) {
+                return array(
+                    'lat' => (float) $facet['selected_values'][0],
+                    'lng' => (float) $facet['selected_values'][1]
+                );
             }
         }
 
@@ -131,6 +153,23 @@ class FacetWP_Facet_Map_Addon
         );
 
         $settings = apply_filters( 'facetwp_map_init_args', $settings );
+
+        // Get the proximity facet's coordinates (if available)
+        $proximity_location = $this->is_proximity_in_use();
+
+        if ( false !== $proximity_location ) {
+            $settings['locations'][] = array(
+                'content' => __( 'Your location', 'fwp-map' ),
+                'position' => $proximity_location,
+                'icon' => array(
+                    'path' => 'M8,0C3.582,0,0,3.582,0,8s8,24,8,24s8-19.582,8-24S12.418,0,8,0z M8,12c-2.209,0-4-1.791-4-4 s1.791-4,4-4s4,1.791,4,4S10.209,12,8,12z',
+                    'fillColor' => 'gold',
+                    'fillOpacity' => 0.8,
+                    'scale' => 0.8,
+                    'anchor' => array( 'x' => 8.5, 'y' => 32 )
+                )
+            );
+        }
 
         // get all post IDs
         if ( isset( $this->map_facet['limit'] ) && 'all' == $this->map_facet['limit'] ) {
