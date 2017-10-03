@@ -70,11 +70,12 @@ class FacetWP_Facet_Map_Addon
      * Generate the facet HTML
      */
     function render( $params ) {
-        $width = $this->map_facet['map_width'];
+
+        $width = $params['facet']['map_width'];
         $width = empty( $width ) ? 600 : $width;
         $width = is_numeric( $width ) ? $width . 'px' : $width;
 
-        $height = (int) $this->map_facet['map_height'];
+        $height = $params['facet']['map_height'];
         $height = empty( $height ) ? 300 : $height;
         $height = is_numeric( $height ) ? $height . 'px' : $height;
 
