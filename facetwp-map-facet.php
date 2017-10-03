@@ -181,7 +181,7 @@ class FacetWP_Facet_Map_Addon
             $post_ids = (array) wp_list_pluck( FWP()->facet->query->get_posts(), 'ID' );
         }
 
-        $coords = $this->get_coordinates( $post_ids );
+        $coords = $this->get_coordinates( $post_ids, $this->map_facet );
 
         foreach ( $post_ids as $post_id ) {
             if ( isset( $coords[ $post_id ] ) ) {
@@ -207,7 +207,7 @@ class FacetWP_Facet_Map_Addon
     /**
      * Grab all coordinates from the index table
      */
-    function get_coordinates( $post_ids ) {
+    function get_coordinates( $post_ids, $facet ) {
         global $wpdb;
 
         $return = array();
@@ -218,7 +218,7 @@ class FacetWP_Facet_Map_Addon
             $sql = "
             SELECT post_id, facet_value AS lat, facet_display_value AS lng
             FROM {$wpdb->prefix}facetwp_index
-            WHERE post_id IN ($post_ids)";
+            WHERE facet_name = '{$facet['name']}' AND post_id IN ($post_ids)";
 
             $result = $wpdb->get_results( $sql );
 
