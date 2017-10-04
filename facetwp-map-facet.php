@@ -178,7 +178,7 @@ class FacetWP_Facet_Map_Addon
         }
         // get paginated post IDs
         else {
-            $post_ids = (array) wp_list_pluck( FWP()->facet->query->get_posts(), 'ID' );
+            $post_ids = (array) wp_list_pluck( FWP()->facet->query->posts, 'ID' );
         }
 
         $coords = $this->get_coordinates( $post_ids, $this->map_facet );
