@@ -88,6 +88,7 @@ var FWP_MAP = FWP_MAP || {};
         if ('yes' === config.cluster) {
             FWP_MAP.mc = new MarkerClusterer(FWP_MAP.map, FWP_MAP.markersArray, {
                 imagePath: FWP.settings.map.imagePath,
+                imageExtension: FWP.settings.map.imageExtension,
                 maxZoom: 14
             });
         }
