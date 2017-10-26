@@ -160,16 +160,21 @@ class FacetWP_Facet_Map_Addon
         $proximity_location = $this->is_proximity_in_use();
 
         if ( false !== $proximity_location ) {
+
+            $args = array(
+                'path' => 'M8,0C3.582,0,0,3.582,0,8s8,24,8,24s8-19.582,8-24S12.418,0,8,0z M8,12c-2.209,0-4-1.791-4-4 s1.791-4,4-4s4,1.791,4,4S10.209,12,8,12z',
+                'fillColor' => 'gold',
+                'fillOpacity' => 0.8,
+                'scale' => 0.8,
+                'anchor' => array( 'x' => 8.5, 'y' => 32 )
+            );
+
+            $proximity_marker = apply_filters( 'facetwp_map_proximity_marker_args', $args );
+
             $settings['locations'][] = array(
                 'content' => __( 'Your location', 'fwp-map' ),
                 'position' => $proximity_location,
-                'icon' => array(
-                    'path' => 'M8,0C3.582,0,0,3.582,0,8s8,24,8,24s8-19.582,8-24S12.418,0,8,0z M8,12c-2.209,0-4-1.791-4-4 s1.791-4,4-4s4,1.791,4,4S10.209,12,8,12z',
-                    'fillColor' => 'gold',
-                    'fillOpacity' => 0.8,
-                    'scale' => 0.8,
-                    'anchor' => array( 'x' => 8.5, 'y' => 32 )
-                )
+                'icon' => $proximity_marker,
             );
         }
 
