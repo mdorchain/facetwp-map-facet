@@ -160,7 +160,7 @@ class FacetWP_Facet_Map_Addon
         $proximity_location = $this->is_proximity_in_use();
 
         if ( false !== $proximity_location ) {
-            $settings['locations'][] = array(
+            $marker_args = array(
                 'content' => __( 'Your location', 'fwp-map' ),
                 'position' => $proximity_location,
                 'icon' => array(
@@ -171,6 +171,12 @@ class FacetWP_Facet_Map_Addon
                     'anchor' => array( 'x' => 8.5, 'y' => 32 )
                 )
             );
+
+            $marker_args = apply_filters( 'facetwp_map_proximity_marker_args', $marker_args );
+
+            if ( ! empty( $marker_args ) ) {
+                $settings['locations'][] = $marker_args;
+            }
         }
 
         // get all post IDs
