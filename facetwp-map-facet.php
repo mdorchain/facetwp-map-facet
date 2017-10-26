@@ -133,6 +133,7 @@ class FacetWP_Facet_Map_Addon
 
         $settings = array(
             'imagePath' => FACETWP_MAP_URL . '/assets/img/m',
+            'imageExtension' => 'png',
             'locations' => array(),
         );
 
